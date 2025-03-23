@@ -40,6 +40,7 @@ else (no)
   :createPipe;
   if (Fork) then (child)
     :executeCommand;
+    :writePipe;
     end
   else (parent)
     :readPipe;
