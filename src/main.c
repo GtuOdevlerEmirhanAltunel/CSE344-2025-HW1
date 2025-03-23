@@ -1,18 +1,26 @@
 #include "main.h"
 #include "functions.h"
-#include "string_util.h"
 #include <string.h>
 #include <unistd.h>
 
 key_value_t command_map[] = {
     {"createDir", createDir, 1},
+    {"createFile", createFile, 1},
+    {"listDir", listDir, 1},
+    {"listFilesByExtension", listFilesByExtension, 2},
+    {"readFile", readFile, 1},
+    {"appendToFile", appendToFile, 2},
+    {"deleteDir", deleteDir, 1},
+    {"deleteFile", deleteFile, 1},
+    {"showLogs", showLogs, 0},
 };
 
 size_t command_map_size = sizeof(command_map) / sizeof(key_value_t);
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
-    write(1, "Error: No command provided\n", 28);
+    write(1, "Error: No command provided\nUsage: ./main <command> [args]\n",
+          59);
     return 1;
   }
 
@@ -27,17 +35,9 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  string_t result;
-  string_init(&result);
-  string_add_str(&result, command_map[command_index].script);
-  for (int i = 0; i < command_map[command_index].argc; i++) {
-    string_arg_replace(&result, i, argv[i + 2]);
-  }
+  result_t res = run(&command_map[command_index], (const char **)argv + 2);
+  log_msg(res.message);
+  write(1, res.message, strlen(res.message));
 
-  result_t res = run(result.str);
-  string_free(&result);
-  log_msg(res.stdout);
-  write(1, res.stdout, strlen(res.stdout));
-
-  return res.status_code;
+  return res.status;
 }

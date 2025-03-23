@@ -36,20 +36,29 @@ void log_msg(const char *str) {
     s[21] = ' ';
     s[22] = '\0';
     write(fd, s, strlen(s));
-    write(fd, str, strlen(str));
+    if (str != 0) {
+      write(fd, str, strlen(str));
+    } else {
+      write(fd, "No message provided\n", 20);
+    }
     close(fd);
   }
 }
 
-result_t run(const char *script) {
+result_t run(key_value_t *command, const char *args[]) {
   int pipefd[2];
+  result_t res = {0, ""};
   if (pipe(pipefd) == -1) {
-    return (result_t){1, "Error: Pipe failed"};
+    res.status = 1;
+    strcpy(res.message, "Error: Pipe failed\n");
+    return res;
   }
 
   pid_t pid = fork();
   if (pid == -1) {
-    return (result_t){1, "Error: Fork failed"};
+    res.status = 1;
+    strcpy(res.message, "Error: Fork failed\n");
+    return res;
   }
 
   if (pid == 0) {
@@ -57,20 +66,21 @@ result_t run(const char *script) {
     dup2(pipefd[1], STDOUT_FILENO);
     close(pipefd[1]);
 
-    char *const argv[] = {(char *)"/bin/sh", (char *)"-c", (char *)script, 0};
-    execvp(argv[0], argv);
-    write(STDOUT_FILENO, "Error: Exec failed", 18);
-    exit(1);
+    result_t _res = command->script(args);
+    write(STDOUT_FILENO, _res.message, strlen(_res.message));
+    exit(_res.status);
   } else {
     close(pipefd[1]);
-    static char buffer[1024];
+    static char buffer[BUFFER_SIZE];
     size_t bytes_read = read(pipefd[0], buffer, sizeof(buffer));
     buffer[bytes_read] = '\0';
     close(pipefd[0]);
 
     int status;
     waitpid(pid, &status, 0);
-    return (result_t){status, buffer};
+    res.status = WEXITSTATUS(status);
+    strncpy(res.message, buffer, BUFFER_SIZE);
+    return res;
   }
 }
 

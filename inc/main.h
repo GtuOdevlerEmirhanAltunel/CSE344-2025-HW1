@@ -3,9 +3,11 @@
 
 #include <stdlib.h>
 
+#define BUFFER_SIZE 16384
+
 typedef struct {
-  int status_code;
-  const char *stdout;
+  int status;
+  char message[BUFFER_SIZE];
 } result_t;
 
 typedef struct {
@@ -18,7 +20,7 @@ extern key_value_t command_map[];
 extern size_t command_map_size;
 
 void log_msg(const char *str);
-result_t run(const char *script);
+result_t run(key_value_t *command, const char *args[]);
 int foundCommand(const char *command);
 
 #endif /* INC_MAIN */

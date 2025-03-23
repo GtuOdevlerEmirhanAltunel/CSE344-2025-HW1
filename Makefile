@@ -32,10 +32,14 @@ fclean: clean
 re: fclean all
 
 $(TARGET).zip:
-	zip -r $(TARGET).zip Makefile inc src
+	@zip -r $(TARGET).zip Makefile inc src
+	@if [ -f README.md ]; then zip -r $(TARGET).zip README.md; fi
+	@if [ -f README.pdf ]; then zip -r $(TARGET).zip README.pdf; fi
 
 $(TARGET).tar.gz:
-	tar -czvf $(TARGET).tar.gz Makefile inc src
+	@tar -czvf $(TARGET).tar.gz Makefile inc src
+	@if [ -f README.md ]; then tar -czvf $(TARGET).tar.gz README.md; fi
+	@if [ -f README.pdf ]; then tar -czvf $(TARGET).tar.gz README.pdf; fi
 
 pack: $(TARGET).zip $(TARGET).tar.gz
 
