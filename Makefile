@@ -10,7 +10,8 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -std=c99 -g $(INCLUDE_DIRS)
 
 TARGET = main
-ARBITRARY = $(TARGET).zip $(TARGET).tar.gz *.txt test_folder test_file
+ARBITRARY = $(AUTHOR).zip $(AUTHOR).tar.gz *.txt test_folder test_file
+AUTHOR = "Emirhan_Altunel_200104004035"
 
 all: $(TARGET).out
 
@@ -31,16 +32,16 @@ fclean: clean
 
 re: fclean all
 
-$(TARGET).zip: Makefile inc src README.md README.pdf
-	@zip -r $(TARGET).zip Makefile inc src
-	@if [ -f README.md ]; then zip -r $(TARGET).zip README.md; fi
-	@if [ -f README.pdf ]; then zip -r $(TARGET).zip README.pdf; fi
+$(AUTHOR).zip: Makefile inc src README.md README.pdf
+	@zip -r $(AUTHOR).zip Makefile inc src
+	@if [ -f README.md ]; then zip -r $(AUTHOR).zip README.md; fi
+	@if [ -f README.pdf ]; then zip -r $(AUTHOR).zip README.pdf; fi
 
-$(TARGET).tar.gz: Makefile inc src README.md README.pdf
-	@tar -czvf $(TARGET).tar.gz Makefile inc src
-	@if [ -f README.md ]; then tar -czvf $(TARGET).tar.gz README.md; fi
-	@if [ -f README.pdf ]; then tar -czvf $(TARGET).tar.gz README.pdf; fi
+$(AUTHOR).tar.gz: Makefile inc src README.md README.pdf
+	@tar -czvf $(AUTHOR).tar.gz Makefile inc src
+	@if [ -f README.md ]; then tar -czvf $(AUTHOR).tar.gz README.md; fi
+	@if [ -f README.pdf ]; then tar -czvf $(AUTHOR).tar.gz README.pdf; fi
 
-pack: $(TARGET).zip $(TARGET).tar.gz
+pack: $(AUTHOR).zip $(AUTHOR).tar.gz
 
 .PHONY: all clean fclean re pack
